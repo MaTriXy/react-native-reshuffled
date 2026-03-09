@@ -16,6 +16,8 @@ interface GridContextType extends GridProps {
   MOVE_PENALTY: number
   CONTAINER_WIDTH: number
   CONTAINER_HEIGHT: number
+  getItemWidth: (columnsSpanned: number) => number
+  getItemHeight: (rowsSpanned: number) => number
 }
 
 const GridContext = createContext<GridContextType | undefined>(undefined)
@@ -43,6 +45,16 @@ export const GridPropsContextProvider: React.FC<ProviderProps> = ({
   const OLD_TRANSLATE_X_Y_DEFAULT = 0
   const MOVE_PENALTY = movePenalty
 
+  function getItemWidth(columnsSpanned: number) {
+    'worklet'
+    return columnsSpanned * CELL_WIDTH + gapHorizontal * (columnsSpanned - 1)
+  }
+
+  function getItemHeight(rowsSpanned: number) {
+    'worklet'
+    return rowsSpanned * CELL_HEIGHT + gapVertical * (rowsSpanned - 1)
+  }
+
   const value = useMemo(
     () => ({
       gridWidth,
@@ -58,6 +70,8 @@ export const GridPropsContextProvider: React.FC<ProviderProps> = ({
       MOVE_PENALTY,
       CONTAINER_WIDTH,
       CONTAINER_HEIGHT,
+      getItemWidth,
+      getItemHeight,
     }),
     [
       gridWidth,
@@ -72,6 +86,8 @@ export const GridPropsContextProvider: React.FC<ProviderProps> = ({
       MOVE_PENALTY,
       CONTAINER_WIDTH,
       CONTAINER_HEIGHT,
+      getItemWidth,
+      getItemHeight,
     ]
   )
 

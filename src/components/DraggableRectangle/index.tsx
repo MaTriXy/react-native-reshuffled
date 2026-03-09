@@ -46,6 +46,8 @@ export function DraggableRectangle<T extends Cell>({
     CONTAINER_HEIGHT,
     gapVertical,
     gapHorizontal,
+    getItemWidth,
+    getItemHeight,
   } = useGridProps()
 
   const x = item.startColumn * (CELL_WIDTH + gapHorizontal)
@@ -107,12 +109,12 @@ export function DraggableRectangle<T extends Cell>({
       // update dragged item's position
       const newTranslateX = clamp(
         oldTranslateX.value + event.translationX,
-        item.width * (CELL_WIDTH + gapHorizontal) - gapHorizontal,
+        getItemWidth(item.width),
         CONTAINER_WIDTH
       )
       const newTranslateY = clamp(
         oldTranslateY.value + event.translationY,
-        item.height * (CELL_HEIGHT + gapVertical) - gapVertical,
+        getItemHeight(item.height),
         CONTAINER_HEIGHT
       )
       translateX.value = newTranslateX
@@ -191,8 +193,8 @@ export function DraggableRectangle<T extends Cell>({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      width: item.width * (CELL_WIDTH + gapHorizontal) - gapHorizontal,
-      height: item.height * (CELL_HEIGHT + gapVertical) - gapVertical,
+      width: getItemWidth(item.width),
+      height: getItemHeight(item.height),
       position: 'absolute',
       zIndex: zIndex.value,
       transform: [
@@ -203,8 +205,8 @@ export function DraggableRectangle<T extends Cell>({
   })
   const shadowAnimatedStyle = useAnimatedStyle(() => {
     return {
-      width: item.width * (CELL_WIDTH + gapHorizontal) - gapHorizontal,
-      height: item.height * (CELL_HEIGHT + gapVertical) - gapVertical,
+      width: getItemWidth(item.width),
+      height: getItemHeight(item.height),
       opacity: isShadowVisible.value ? 1 : 0,
       position: 'absolute',
       zIndex: 0,
