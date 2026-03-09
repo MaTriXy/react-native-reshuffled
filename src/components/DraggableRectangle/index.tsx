@@ -107,12 +107,12 @@ export function DraggableRectangle<T extends Cell>({
       // update dragged item's position
       const newTranslateX = clamp(
         oldTranslateX.value + event.translationX,
-        item.width * CELL_WIDTH,
+        item.width * (CELL_WIDTH + gapHorizontal) - gapHorizontal,
         CONTAINER_WIDTH
       )
       const newTranslateY = clamp(
         oldTranslateY.value + event.translationY,
-        item.height * CELL_HEIGHT,
+        item.height * (CELL_HEIGHT + gapVertical) - gapVertical,
         CONTAINER_HEIGHT
       )
       translateX.value = newTranslateX
