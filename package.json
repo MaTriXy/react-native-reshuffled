@@ -54,6 +54,12 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
+  "dependencies": {
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-reanimated": "~4.1.1",
+    "react-native-nitro-modules": "*",
+    "react-native-worklets": "*"
+  },
   "devDependencies": {
     "@react-native/eslint-config": "0.82.0",
     "@types/react": "^19.1.03",
@@ -69,11 +75,7 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*",
-    "react-native-nitro-modules": "*",
-    "react-native-gesture-handler": "~2.28.0",
-    "react-native-reanimated": "~4.1.1",
-    "react-native-worklets": "*"
+    "react-native": "*"
   },
   "eslintConfig": {
     "root": true,
