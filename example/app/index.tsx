@@ -5,7 +5,15 @@ import {
   CONTAINER_HEIGHT,
   CONTAINER_WIDTH,
 } from '../mocks/sizes'
-import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native'
+import { useState } from 'react'
+import {
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 
 interface CellWithExtraData extends Cell {
   icon: string
@@ -27,6 +35,7 @@ const CELL_CONTENT: Record<
 }
 
 export default function App() {
+  const [collisionsAllowed, setCollisionsAllowed] = useState(false)
   const config = 3
   const { rows, columns } = CONFIGURATION_PAIRS[config]
 
@@ -79,6 +88,22 @@ export default function App() {
           Drag and drop the tiles to see how other elements dynamically adjust
           to the new layout in real-time.
         </Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.collisionsToggle,
+            pressed && styles.collisionsTogglePressed,
+          ]}
+          onPress={() => setCollisionsAllowed((v) => !v)}
+        >
+          <Text style={styles.collisionsToggleLabel}>
+            Collisions: {collisionsAllowed ? 'ON' : 'OFF'}
+          </Text>
+          <Text style={styles.collisionsToggleHint}>
+            {collisionsAllowed
+              ? 'Tiles can overlap; others stay put.'
+              : 'Grid reshuffles to avoid overlap.'}
+          </Text>
+        </Pressable>
       </View>
       <View style={styles.gridWrapper}>
         <View style={styles.gridBoard}>
@@ -86,7 +111,8 @@ export default function App() {
             data={defaultData}
             renderItem={renderItem}
             renderShadow={renderShadow}
-            onDragEnd={onDragEnd}
+            // onDragEnd={onDragEnd}
+            allowCollisions={collisionsAllowed}
             rows={rows}
             columns={columns}
             style={styles.grid}
@@ -125,6 +151,32 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     maxWidth: '80%',
     fontWeight: '500',
+  },
+  collisionsToggle: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(99, 102, 241, 0.45)',
+    maxWidth: '90%',
+  },
+  collisionsTogglePressed: {
+    opacity: 0.85,
+  },
+  collisionsToggleLabel: {
+    color: '#a5b4fc',
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  collisionsToggleHint: {
+    marginTop: 4,
+    color: '#64748b',
+    fontSize: 11,
+    textAlign: 'center',
+    lineHeight: 15,
   },
   gridWrapper: {
     flex: 1,
