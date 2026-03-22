@@ -1,4 +1,4 @@
-import { Cell } from '../../algorithm'
+import type { Cell, GetNewGridProps } from '../../algorithm'
 import React from 'react'
 import { StyleProp, ViewStyle } from 'react-native'
 
@@ -22,6 +22,12 @@ interface ReshufflableGridProps<ItemT extends Cell> {
   // IMPORTANT NOTE: Changing movePenalty slows down the whole algorithm the more the bigger its value is
   // Experimental prop for now
   movePenalty?: number
+  /**
+   * Overrides the default reshuffle algorithm for live layout while dragging
+   * (only when `allowCollisions` is false). Drop uses normal rules: with collisions off,
+   * overlapping another item snaps back.
+   */
+  getNewGrid?: (props: GetNewGridProps) => Cell[]
 }
 
 export type { ReshufflableGridProps, RenderItemInfo }

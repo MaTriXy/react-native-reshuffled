@@ -4,6 +4,7 @@ import {
   usePuzzleConfettiBurst,
 } from './PuzzleConfettiRoot'
 import { generateInitialItems } from '../mocks/configurations'
+import { puzzleResolveNewGrid } from '../mocks/puzzleResolve'
 import {
   CONFIGURATION_PAIRS,
   CONTAINER_HEIGHT,
@@ -35,6 +36,9 @@ interface PuzzlePiece extends Cell {
 
 type AppMode = 'demo' | 'puzzle'
 
+/** 12×12 + 4×4 tiles + collisions; or 3×3 + 1×1 tiles + custom swap rules. */
+type PuzzleGridMode = 'grid12' | 'grid3'
+
 const CELL_CONTENT: Record<
   string,
   { icon: string; title: string; color: string }
@@ -48,11 +52,12 @@ const CELL_CONTENT: Record<
   'item-6': { icon: '🗺️', title: 'Maps', color: '#f43f5e' },
 }
 
-/** Puzzle grid: 12×12 cells, nine 4×4 tiles (logical 3×3). */
-const PUZZLE_GRID_ROWS = 12
-const PUZZLE_GRID_COLUMNS = 12
-const PUZZLE_PIECE_CELLS = 4
 const PUZZLE_BLOCK_COUNT = 3
+
+const PUZZLE_LAYOUT = {
+  grid12: { rows: 12, columns: 12, stride: 4 },
+  grid3: { rows: 3, columns: 3, stride: 1 },
+} as const
 
 /**
  * Official React Native icon (PWA / docs).
@@ -79,15 +84,16 @@ function shuffleInPlace<T>(arr: T[]): void {
   }
 }
 
-function buildScrambledPuzzle(): PuzzlePiece[] {
+function buildScrambledPuzzle(layout: PuzzleGridMode): PuzzlePiece[] {
+  const { stride } = PUZZLE_LAYOUT[layout]
   const solved: PuzzlePiece[] = []
   for (let i = 0; i < 9; i++) {
-    const br = Math.floor(i / PUZZLE_BLOCK_COUNT) * PUZZLE_PIECE_CELLS
-    const bc = (i % PUZZLE_BLOCK_COUNT) * PUZZLE_PIECE_CELLS
+    const br = Math.floor(i / PUZZLE_BLOCK_COUNT) * stride
+    const bc = (i % PUZZLE_BLOCK_COUNT) * stride
     solved.push({
       id: `pz-${i}`,
-      width: PUZZLE_PIECE_CELLS,
-      height: PUZZLE_PIECE_CELLS,
+      width: stride,
+      height: stride,
       color: PUZZLE_SHADOW_TINT[i] ?? '#64748b',
       targetRow: br,
       targetColumn: bc,
@@ -105,8 +111,8 @@ function buildScrambledPuzzle(): PuzzlePiece[] {
     const s = slots[i]!
     return {
       ...p,
-      startRow: Math.floor(s / PUZZLE_BLOCK_COUNT) * PUZZLE_PIECE_CELLS,
-      startColumn: (s % PUZZLE_BLOCK_COUNT) * PUZZLE_PIECE_CELLS,
+      startRow: Math.floor(s / PUZZLE_BLOCK_COUNT) * stride,
+      startColumn: (s % PUZZLE_BLOCK_COUNT) * stride,
     }
   })
 }
@@ -130,11 +136,15 @@ function AppContent() {
   const burstConfetti = usePuzzleConfettiBurst()
   const [mode, setMode] = useState<AppMode>('demo')
   const [collisionsAllowed, setCollisionsAllowed] = useState(false)
+  const [puzzleGridMode, setPuzzleGridMode] =
+    useState<PuzzleGridMode>('grid12')
   const [puzzleData, setPuzzleData] = useState<PuzzlePiece[]>(() =>
-    buildScrambledPuzzle()
+    buildScrambledPuzzle('grid12')
   )
   /** Remount grid when starting / resetting puzzle so `data` applies cleanly. */
   const [puzzleSession, setPuzzleSession] = useState(0)
+
+  const puzzleDims = PUZZLE_LAYOUT[puzzleGridMode]
 
   const config = 3
   const { rows, columns } = CONFIGURATION_PAIRS[config]
@@ -183,8 +193,9 @@ function AppContent() {
       item.startColumn === item.targetColumn
     const tr = item.targetRow
     const tc = item.targetColumn
-    const pieceCol = tc / PUZZLE_PIECE_CELLS
-    const pieceRow = tr / PUZZLE_PIECE_CELLS
+    const stride = item.width
+    const pieceCol = tc / stride
+    const pieceRow = tr / stride
     return (
       <View
         style={[
@@ -231,7 +242,7 @@ function AppContent() {
           {
             text: 'New puzzle',
             onPress: () => {
-              setPuzzleData(buildScrambledPuzzle())
+              setPuzzleData(buildScrambledPuzzle(puzzleGridMode))
               setPuzzleSession((s) => s + 1)
             },
           },
@@ -243,7 +254,14 @@ function AppContent() {
 
   const switchToPuzzle = () => {
     setMode('puzzle')
-    setPuzzleData(buildScrambledPuzzle())
+    setPuzzleData(buildScrambledPuzzle(puzzleGridMode))
+    setPuzzleSession((s) => s + 1)
+  }
+
+  const setPuzzleLayoutMode = (next: PuzzleGridMode) => {
+    if (next === puzzleGridMode) return
+    setPuzzleGridMode(next)
+    setPuzzleData(buildScrambledPuzzle(next))
     setPuzzleSession((s) => s + 1)
   }
 
@@ -298,11 +316,51 @@ function AppContent() {
             </Pressable>
           </>
         ) : (
-          <Text style={styles.instructionText}>
-            Place the nine tiles to rebuild the React Native logo: align the
-            top-left corner of each 4×4 block with the matching segment on the
-            12×12 grid. Collisions are enabled.
-          </Text>
+          <>
+            <View style={styles.puzzleLayoutToggleRow}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.puzzleLayoutChip,
+                  puzzleGridMode === 'grid12' && styles.puzzleLayoutChipActive,
+                  pressed && styles.puzzleLayoutChipPressed,
+                ]}
+                onPress={() => setPuzzleLayoutMode('grid12')}
+              >
+                <Text
+                  style={[
+                    styles.puzzleLayoutChipLabel,
+                    puzzleGridMode === 'grid12' &&
+                      styles.puzzleLayoutChipLabelActive,
+                  ]}
+                >
+                  12×12 · kolizje
+                </Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.puzzleLayoutChip,
+                  puzzleGridMode === 'grid3' && styles.puzzleLayoutChipActive,
+                  pressed && styles.puzzleLayoutChipPressed,
+                ]}
+                onPress={() => setPuzzleLayoutMode('grid3')}
+              >
+                <Text
+                  style={[
+                    styles.puzzleLayoutChipLabel,
+                    puzzleGridMode === 'grid3' &&
+                      styles.puzzleLayoutChipLabelActive,
+                  ]}
+                >
+                  3×3 · własny getNewGrid
+                </Text>
+              </Pressable>
+            </View>
+            <Text style={styles.instructionText}>
+              {puzzleGridMode === 'grid12'
+                ? 'Odtwórz logo: dopasuj każdy blok 4×4 do segmentu na siatce 12×12. Kolizje są włączone — kafelki mogą nachodzić na siebie.'
+                : 'Siatka 3×3, kolizje wyłączone. Podczas przeciągania układ liczy własny getNewGrid (jak w puzzlu: jedna nakładka → podgląd zamiany, więcej → bez zmian). Upuść tylko na wolne pole — na zajęte cofnie się jak wcześniej.'}
+            </Text>
+          </>
         )}
       </View>
       <View style={styles.gridWrapper}>
@@ -322,14 +380,17 @@ function AppContent() {
             />
           ) : (
             <ReshufflableGrid
-              key={`puzzle-${puzzleSession}`}
+              key={`puzzle-${puzzleSession}-${puzzleGridMode}`}
               data={puzzleData}
               renderItem={renderPuzzleItem}
               renderShadow={renderPuzzleShadow}
               onDragEnd={onPuzzleDragEnd}
-              allowCollisions
-              rows={PUZZLE_GRID_ROWS}
-              columns={PUZZLE_GRID_COLUMNS}
+              allowCollisions={puzzleGridMode === 'grid12'}
+              getNewGrid={
+                puzzleGridMode === 'grid3' ? puzzleResolveNewGrid : undefined
+              }
+              rows={puzzleDims.rows}
+              columns={puzzleDims.columns}
               style={styles.grid}
               gapVertical={10}
               gapHorizontal={10}
@@ -393,6 +454,38 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     maxWidth: '80%',
     fontWeight: '500',
+  },
+  puzzleLayoutToggleRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 4,
+    maxWidth: '92%',
+  },
+  puzzleLayoutChip: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(148, 163, 184, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(148, 163, 184, 0.35)',
+  },
+  puzzleLayoutChipActive: {
+    backgroundColor: 'rgba(99, 102, 241, 0.22)',
+    borderColor: 'rgba(129, 140, 248, 0.65)',
+  },
+  puzzleLayoutChipPressed: {
+    opacity: 0.88,
+  },
+  puzzleLayoutChipLabel: {
+    color: '#94a3b8',
+    fontSize: 13,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  puzzleLayoutChipLabelActive: {
+    color: '#c7d2fe',
   },
   collisionsToggle: {
     marginTop: 8,

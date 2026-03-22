@@ -108,7 +108,6 @@ export function useReshufflableGrid<T extends Cell>(
         return
       }
 
-
       const withoutDragged = items.filter((item) => item.id !== id)
       const draggedItemUpdated = {
         ...draggedItem,
@@ -119,9 +118,9 @@ export function useReshufflableGrid<T extends Cell>(
 
       setItems(nextItems)
       setItemsBeforeDrag(nextItems)
-      notifyDragEnd(nextItems)
+      onDragEnd?.(nextItems)
     },
-    [items, itemsBeforeDrag, notifyDragEnd]
+    [items, notifyDragEnd]
   )
 
   const dimensionsDefaulted = dimensions.width === 0 || dimensions.height === 0
