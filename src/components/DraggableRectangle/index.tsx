@@ -13,14 +13,9 @@ import { scheduleOnRN } from 'react-native-worklets'
 import { useGridProps } from '../GridPropsContextProvider'
 import { RenderItemInfo } from '../ReshufflableGrid/types'
 
-function getDefaultZIndex(index: number) {
+export function getDefaultZIndex(index: number): number {
   'worklet'
   return 10 + 2 * index
-}
-
-function getDefaultShawdowZIndex(index: number) {
-  'worklet'
-  return getDefaultZIndex(index) - 1
 }
 
 type DraggableRectangleProps<ItemT extends Cell> = {
@@ -71,7 +66,7 @@ export function DraggableRectangle<T extends Cell>({
   const translateXrounded = useSharedValue(x)
   const translateYrounded = useSharedValue(y)
   const zIndex = useSharedValue(getDefaultZIndex(index))
-  const shadowZIndex = useSharedValue(getDefaultShawdowZIndex(index))
+  const shadowZIndex = useSharedValue(getDefaultZIndex(index) - 1)
 
   const isShadowVisible = useSharedValue(false)
 
@@ -79,6 +74,7 @@ export function DraggableRectangle<T extends Cell>({
     translateX.value = withTiming(x, { duration: 300 })
     translateY.value = withTiming(y, { duration: 300 })
   }, [translateX, translateY, x, y])
+
 
   // Hook reacting to cell's translateX/Yrounded changes
   useAnimatedReaction(
@@ -177,6 +173,8 @@ export function DraggableRectangle<T extends Cell>({
           if (isOverlapping) break
         }
       }
+
+   
       if (isOverlapping) {
         isShadowVisible.value = false
 
@@ -203,8 +201,11 @@ export function DraggableRectangle<T extends Cell>({
           translateYrounded.value / (CELL_HEIGHT + gapVertical)
         )
       }
+      setTimeout(() => {
+
       zIndex.value = 997
       shadowZIndex.value = 996
+      }, 200)
     })
 
   const animatedStyle = useAnimatedStyle(() => {

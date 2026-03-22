@@ -10,9 +10,10 @@ import {
   useReshufflableGrid,
 } from './useReshufflableGrid'
 
-export type ReshufflableGridCoreProps<T extends Cell> = ReshufflableGridProps<T> & {
-  getNewGrid: ReshufflableGridGetNewGrid
-}
+export type ReshufflableGridCoreProps<T extends Cell> =
+  ReshufflableGridProps<T> & {
+    getNewGrid: ReshufflableGridGetNewGrid
+  }
 
 export function ReshufflableGridCore<T extends Cell>(
   props: ReshufflableGridCoreProps<T>
@@ -46,7 +47,6 @@ export function ReshufflableGridCore<T extends Cell>(
                 key={item.id}
                 item={item}
                 index={index}
-                totalItemCount={items.length}
                 renderItem={renderItem}
                 renderShadow={renderShadow}
                 onDragUpdate={handleDragUpdate}

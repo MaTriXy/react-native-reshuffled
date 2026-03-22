@@ -53,7 +53,7 @@ export function useReshufflableGrid<T extends Cell>(
       if (!isDragged.value) {
         return
       }
-      
+
       if (allowCollisions) {
         return
       }
@@ -108,12 +108,6 @@ export function useReshufflableGrid<T extends Cell>(
         return
       }
 
-      if (
-        draggedItem.startColumn === targetColumn &&
-        draggedItem.startRow === targetRow
-      ) {
-        setItems(itemsBeforeDrag)
-      }
 
       const withoutDragged = items.filter((item) => item.id !== id)
       const draggedItemUpdated = {
@@ -130,8 +124,7 @@ export function useReshufflableGrid<T extends Cell>(
     [items, itemsBeforeDrag, notifyDragEnd]
   )
 
-  const dimensionsDefaulted =
-    dimensions.width === 0 || dimensions.height === 0
+  const dimensionsDefaulted = dimensions.width === 0 || dimensions.height === 0
 
   const gridProps = {
     gridWidth: dimensions.width,
