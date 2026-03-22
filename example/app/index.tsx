@@ -36,7 +36,7 @@ interface PuzzlePiece extends Cell {
 
 type AppMode = 'demo' | 'puzzle'
 
-/** 12×12 + 4×4 tiles + collisions; or 3×3 + 1×1 tiles + custom swap rules. */
+/** Puzzle behavior preset: collisions allowed vs custom overlap-based layout while dragging. */
 type PuzzleGridMode = 'grid12' | 'grid3'
 
 const CELL_CONTENT: Record<
@@ -271,11 +271,11 @@ function AppContent() {
           onPress={mode === 'demo' ? switchToPuzzle : switchToDemo}
         >
           <Text style={styles.modeToggleLabel}>
-            {mode === 'demo' ? '→ Puzzle mode' : '← Demo mode'}
+            {mode === 'demo' ? '→ Puzzles' : '← Demo mode'}
           </Text>
           <Text style={styles.modeToggleHint}>
             {mode === 'demo'
-              ? 'Try the puzzle — drag the pieces until the picture fits.'
+              ? 'Try solving the puzzles—they showcase the new additions.'
               : 'Back to the standard grid with collision toggle.'}
           </Text>
         </Pressable>
@@ -298,7 +298,7 @@ function AppContent() {
               </Text>
               <Text style={styles.collisionsToggleHint}>
                 {collisionsAllowed
-                  ? 'Tiles can overlap; others stay put.'
+                  ? "Tiles can overlap; grid doesn't adjust"
                   : 'Grid reshuffles to avoid overlap.'}
               </Text>
             </Pressable>
@@ -321,7 +321,7 @@ function AppContent() {
                       styles.puzzleLayoutChipLabelActive,
                   ]}
                 >
-                  12×12 · kolizje
+                  Collisions allowed
                 </Text>
               </Pressable>
               <Pressable
@@ -339,14 +339,14 @@ function AppContent() {
                       styles.puzzleLayoutChipLabelActive,
                   ]}
                 >
-                  3×3 · własny getNewGrid
+                  Custom algorithm
                 </Text>
               </Pressable>
             </View>
             <Text style={styles.instructionText}>
               {puzzleGridMode === 'grid12'
-                ? 'Odtwórz logo: dopasuj każdy blok 4×4 do segmentu na siatce 12×12. Kolizje są włączone — kafelki mogą nachodzić na siebie.'
-                : 'Siatka 3×3, kolizje wyłączone. Podczas przeciągania układ liczy własny getNewGrid (jak w puzzlu: jedna nakładka → podgląd zamiany, więcej → bez zmian). Upuść tylko na wolne pole — na zajęte cofnie się jak wcześniej.'}
+                ? 'Tiles can overlap each other. Other tiles stay put—the grid does not reshuffle or auto-adjust when you drop.'
+                : 'A custom algorithm runs while you drag: overlapping tiles are swapped in the layout.'}
             </Text>
           </>
         )}

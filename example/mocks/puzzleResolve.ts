@@ -92,7 +92,10 @@ function applyPuzzlePlacement(
   )
 }
 
-/** Swap with exactly one overlapping piece; revert if zero overlap is a move, >1 overlap, or out of bounds. */
+/**
+ * Swap with exactly one other piece that overlaps the drop footprint; keep the layout
+ * unchanged if the footprint is free, overlaps more than one piece, or is out of bounds.
+ */
 export function puzzleResolveNewGrid(props: GetNewGridProps): Cell[] {
   const list = props.oldGrid.cellsToBeSet
   const picked = list[props.pickedCellIndex]

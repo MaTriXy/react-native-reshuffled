@@ -47,9 +47,9 @@ export function useReshufflableGrid<T extends Cell>(
 
   const handleDragUpdate = useCallback(
     (draggedItemId: string, finalX: number, finalY: number) => {
-      // safe fallback if dragged item was dropped before calculating the grid
-      // if it was dropped on free place, it will just update with updateItemsBeforeDrag
-      // if it was dropped on (in that time) taken place, it will go back to its place
+      // If the gesture ends before we compute a layout, skip (drop handler will commit).
+      // Free target: updateItemsBeforeDrag applies the snapped cell.
+      // Occupied target with collisions off: DraggableRectangle reverts to the start position.
       if (!isDragged.value) {
         return
       }
