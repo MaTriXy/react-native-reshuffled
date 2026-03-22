@@ -1,4 +1,8 @@
 import { ReshufflableGrid, RenderItemInfo, Cell } from 'react-native-reshuffled'
+import {
+  PuzzleConfettiRoot,
+  usePuzzleConfettiBurst,
+} from './PuzzleConfettiRoot'
 import { generateInitialItems } from '../mocks/configurations'
 import {
   CONFIGURATION_PAIRS,
@@ -115,6 +119,15 @@ function isPuzzleSolved(items: PuzzlePiece[]): boolean {
 }
 
 export default function App() {
+  return (
+    <PuzzleConfettiRoot>
+      <AppContent />
+    </PuzzleConfettiRoot>
+  )
+}
+
+function AppContent() {
+  const burstConfetti = usePuzzleConfettiBurst()
   const [mode, setMode] = useState<AppMode>('demo')
   const [collisionsAllowed, setCollisionsAllowed] = useState(false)
   const [puzzleData, setPuzzleData] = useState<PuzzlePiece[]>(() =>
@@ -210,6 +223,7 @@ export default function App() {
 
   const onPuzzleDragEnd = (items: PuzzlePiece[]) => {
     if (isPuzzleSolved(items)) {
+      burstConfetti(280)
       Alert.alert(
         'Solved!',
         'The React Native logo is complete.',
