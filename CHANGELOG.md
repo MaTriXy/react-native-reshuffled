@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] - 2026-03-25
+
+### Changed
+- **Breaking:** Public API changed to namespace pattern. `ReshufflableGrid` is replaced by `Reshuffled.Grid`.
+
+  ```tsx
+  // before
+  import { ReshufflableGrid } from 'react-native-reshuffled'
+  <ReshufflableGrid ... />
+
+  // after
+  import { Reshuffled } from 'react-native-reshuffled'
+  <Reshuffled.Grid ... />
+  ```
+
+---
+
 ## [0.2.0] - 2026-03-25
 
 ### Added
