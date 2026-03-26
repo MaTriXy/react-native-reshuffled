@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
----
+## [0.2.3] - 2026-03-26
 
-## [0.2.1] - 2026-03-25
+### Fix
+
+- zIndexTrigger type and dependency array usage
+
+
+## [0.2.2] - 2026-03-25
 
 ### Changed
 - **Breaking:** Public API changed to namespace pattern. `ReshufflableGrid` is replaced by `Reshuffled.Grid`.
@@ -24,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   <Reshuffled.Grid ... />
   ```
 
----
 
 ## [0.2.0] - 2026-03-25
 
@@ -40,7 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `ReshufflableGrid` internally split into `ReshufflableGridCore` and `useReshufflableGrid` for better separation of concerns.
 
----
 
 ## [0.1.3] - 2026-03-09
 
